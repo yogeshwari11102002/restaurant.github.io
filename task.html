@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SWAMI OM RESTUARANT</title>
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f9fa;
+        }
+
+        .hero-section {
+            background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('https://images.unsplash.com/photo-1513104890138-7c749659a591?w=1600&auto=format&fit=crop');
+            background-size: cover;
+            background-position: center;
+        }
+
+        .menu-card {
+            transition: all 0.3s ease;
+            height: 100%;
+        }
+
+        .menu-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .menu-card img {
+            height: 200px;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+
+        .menu-card:hover img {
+            transform: scale(1.03);
+        }
+
+        .order-item {
+            padding: 10px 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        .quantity-btn {
+            width: 30px;
+            height: 30px;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+    
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .menu-item {
+            animation: fadeIn 0.5s ease forwards;
+            opacity: 0;
+        }
+
+    
+        .menu-item:nth-child(1) { animation-delay: 0.1s; }
+        .menu-item:nth-child(2) { animation-delay: 0.2s; }
+        .menu-item:nth-child(3) { animation-delay: 0.3s; }
+        .menu-item:nth-child(4) { animation-delay: 0.4s; }
+        .menu-item:nth-child(5) { animation-delay: 0.5s; }
+        .menu-item:nth-child(6) { animation-delay: 0.6s; }
+        .menu-item:nth-child(7) { animation-delay: 0.7s; }
+        .menu-item:nth-child(8) { animation-delay: 0.8s; }
+    </style>
+</head>
+<body>
+    
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top">
+        <div class="container">
+            <a class="navbar-brand" href="#">SWAMI OM</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="#">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#menu">Menu</a>
+                    </li>
+                </ul>
+                <button class="btn btn-outline-light" id="cartButton">
+                    <i class="fas fa-shopping-cart"></i>
+                    <span class="badge bg-danger ms-1" id="cartBadge">0</span>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+
+    <header class="hero-section py-5 mb-4">
+        <div class="container text-center text-white">
+            <h1 class="display-4 fw-bold">SWAMI OM RESTUARANT</h1>
+            <p class="lead">Quality food delivered to your doorstep</p>
+        </div>
+    </header>
+
+    
+    <section class="container py-4" id="menu">
+        <div class="row mb-4">
+            <div class="col-md-6 mb-3">
+                <input type="text" class="form-control" id="searchInput" placeholder="Search menu items...">
+            </div>
+            <div class="col-md-6">
+                <div class="btn-group w-100">
+                    <button class="btn btn-outline-primary filter-btn active" data-filter="all">All</button>
+                    <button class="btn btn-outline-primary filter-btn" data-filter="starters">Starters</button>
+                    <button class="btn btn-outline-primary filter-btn" data-filter="main">Main Course</button>
+                    <button class="btn btn-outline-primary filter-btn" data-filter="dessert">Desserts</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="row g-4" id="menuItems">
+            
+        </div>
+    </section>
+
+    <div class="offcanvas offcanvas-end" tabindex="-1" id="orderSidebar">
+        <div class="offcanvas-header">
+            <h5 class="offcanvas-title">Your Order</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="offcanvas"></button>
+        </div>
+        <div class="offcanvas-body">
+            <div id="orderItems">
+                <p class="text-muted">Your cart is empty</p>
+            </div>
+            <hr>
+            <div class="d-flex justify-content-between fw-bold fs-5">
+                <span>Total:</span>
+                <span id="orderTotal">$0.00</span>
+            </div>
+            <button class="btn btn-primary w-100 mt-3" id="checkoutButton">Place Order</button>
+        </div>
+    </div>
+
+  
+    <div class="modal fade" id="orderModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Complete Your Order</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="orderForm">
+                        <div class="mb-3">
+                            <label for="name" class="form-label">Full Name</label>
+                            <input type="text" class="form-control" id="name" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="phone" class="form-label">Mobile Number</label>
+                            <input type="tel" class="form-control" id="phone" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="address" class="form-label">Delivery Address</label>
+                            <textarea class="form-control" id="address" rows="3" required></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Payment Method</label>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="payment" id="cash" value="cash" checked>
+                                <label class="form-check-label" for="cash">Cash on Delivery</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="payment" id="upi" value="upi">
+                                <label class="form-check-label" for="upi">UPI</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="payment" id="card" value="card">
+                                <label class="form-check-label" for="card">Credit/Debit Card</label>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" id="submitOrder">Submit Order</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    
+    <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 11">
+        <div id="confirmationToast" class="toast hide" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="toast-header bg-success text-white">
+                <strong class="me-auto">Order Confirmed!</strong>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast"></button>
+            </div>
+            <div class="toast-body">
+                Your order has been placed successfully.
+            </div>
+        </div>
+    </div>
+
+    
+    <footer class="bg-dark text-white py-4 mt-5">
+        <div class="container text-center">
+            <p>&copy; 2025 SWAMI OM. All rights reserved.</p>
+        </div>
+    </footer>
+
+ 
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+    $(document).ready(function() {
+        
+        const menuItems = [
+            {
+                id: 1,
+                name: "Margherita Pizza",
+                description: "Classic pizza with tomato sauce and mozzarella",
+                price: 12.99,
+                category: "main",
+                image: "https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=500&auto=format&fit=crop"
+            },
+            {
+                id: 2,
+                name: "Cheeseburger",
+                description: "Beef patty with cheese, lettuce and special sauce",
+                price: 8.99,
+                category: "main",
+                image: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=500&auto=format&fit=crop"
+            },
+            {
+                id: 3,
+                name: "Caesar Salad",
+                description: "Fresh romaine with croutons and parmesan",
+                price: 7.99,
+                category: "starters",
+                image: "https://images.unsplash.com/photo-1546793665-c74683f339c1?w=500&auto=format&fit=crop"
+            },
+            {
+                id: 4,
+                name: "Pasta Carbonara",
+                description: "Spaghetti with creamy egg sauce and pancetta",
+                price: 11.99,
+                category: "main",
+                image: "https://images.unsplash.com/photo-1555949258-eb67b1ef0ceb?w=500&auto=format&fit=crop"
+            },
+            {
+                id: 5,
+                name: "Garlic Bread",
+                description: "Toasted bread with garlic butter",
+                price: 4.99,
+                category: "starters",
+                image: "https://winchelseahotel.com/wp-content/uploads/2020/03/garlic-bread-copy-470x470.png"
+            },
+            {
+                id: 6,
+                name: "Chocolate Cake",
+                description: "Rich chocolate cake with frosting",
+                price: 6.99,
+                category: "dessert",
+                image: "https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=500&auto=format&fit=crop"
+            },
+            {
+                id: 7,
+                name: "Grilled Salmon",
+                description: "Fresh salmon with lemon butter sauce",
+                price: 15.99,
+                category: "main",
+                image: "https://images.unsplash.com/photo-1519708227418-c8fd9a32b7a2?w=500&auto=format&fit=crop"
+            },
+            {
+                id: 8,
+                name: "Ice Cream Sundae",
+                description: "Vanilla ice cream with chocolate sauce",
+                price: 5.99,
+                category: "dessert",
+                image: "https://images.unsplash.com/photo-1497034825429-c343d7c6a68f?w=500&auto=format&fit=crop"
+            }
+        ];
+
+        let cart = [];
+
+        function loadMenu() {
+            $('#menuItems').empty();
+            menuItems.forEach(item => {
+                $('#menuItems').append(`
+                    <div class="col-md-6 col-lg-4 col-xl-3 menu-item" data-category="${item.category}">
+                        <div class="card menu-card mb-4">
+                            <img src="${item.image}" class="card-img-top" alt="${item.name}">
+                            <div class="card-body">
+                                <h5 class="card-title">${item.name}</h5>
+                                <p class="card-text">${item.description}</p>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <span class="text-primary fw-bold">$${item.price.toFixed(2)}</span>
+                                    <button class="btn btn-sm btn-primary add-to-cart" data-id="${item.id}">
+                                        Add to Order
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `);
+            });
+        }
+
+       
+        function updateCart() {
+            const $orderItems = $('#orderItems');
+            const $orderTotal = $('#orderTotal');
+            
+            if (cart.length === 0) {
+                $orderItems.html('<p class="text-muted">Your cart is empty</p>');
+                $orderTotal.text('$0.00');
+                $('#cartBadge').text('0');
+                return;
+            }
+
+            $orderItems.empty();
+            let total = 0;
+
+            cart.forEach(item => {
+                const itemTotal = item.price * item.quantity;
+                total += itemTotal;
+
+                $orderItems.append(`
+                    <div class="order-item" data-id="${item.id}">
+                        <div>
+                            <h6>${item.name}</h6>
+                            <div class="d-flex align-items-center mt-2">
+                                <button class="btn btn-sm btn-outline-secondary quantity-btn decrease">-</button>
+                                <span class="mx-2">${item.quantity}</span>
+                                <button class="btn btn-sm btn-outline-secondary quantity-btn increase">+</button>
+                            </div>
+                        </div>
+                        <div class="text-end">
+                            <div>$${itemTotal.toFixed(2)}</div>
+                            <button class="btn btn-sm btn-link text-danger p-0 remove">Remove</button>
+                        </div>
+                    </div>
+                `);
+            });
+
+            $orderTotal.text(`$${total.toFixed(2)}`);
+            $('#cartBadge').text(cart.reduce((sum, item) => sum + item.quantity, 0));
+        }
+
+        
+        $('.filter-btn').click(function() {
+            $('.filter-btn').removeClass('active');
+            $(this).addClass('active');
+            const filter = $(this).data('filter');
+
+            if (filter === 'all') {
+                $('.menu-item').show();
+            } else {
+                $('.menu-item').hide();
+                $(`.menu-item[data-category="${filter}"]`).show();
+            }
+        });
+
+       
+        $('#searchInput').on('input', function() {
+            const searchTerm = $(this).val().toLowerCase();
+            $('.menu-item').each(function() {
+                const itemText = $(this).text().toLowerCase();
+                $(this).toggle(itemText.includes(searchTerm));
+            });
+        });
+
+       
+        $(document).on('click', '.add-to-cart', function() {
+            const itemId = parseInt($(this).data('id'));
+            const item = menuItems.find(i => i.id === itemId);
+            const existingItem = cart.find(i => i.id === itemId);
+
+            if (existingItem) {
+                existingItem.quantity++;
+            } else {
+                cart.push({...item, quantity: 1});
+            }
+
+            updateCart();
+            new bootstrap.Offcanvas('#orderSidebar').show();
+        });
+
+      
+        $(document).on('click', '.increase', function() {
+            const itemId = parseInt($(this).closest('.order-item').data('id'));
+            const item = cart.find(i => i.id === itemId);
+            item.quantity++;
+            updateCart();
+        });
+
+        $(document).on('click', '.decrease', function() {
+            const itemId = parseInt($(this).closest('.order-item').data('id'));
+            const item = cart.find(i => i.id === itemId);
+            if (item.quantity > 1) {
+                item.quantity--;
+                updateCart();
+            }
+        });
+
+     
+        $(document).on('click', '.remove', function() {
+            const itemId = parseInt($(this).closest('.order-item').data('id'));
+            cart = cart.filter(i => i.id !== itemId);
+            updateCart();
+        });
+
+      
+        $('#checkoutButton').click(function() {
+            if (cart.length === 0) {
+                alert('Your cart is empty');
+                return;
+            }
+            $('#orderModal').modal('show');
+        });
+
+        
+        $('#submitOrder').click(function() {
+            let valid = true;
+            $('#orderForm .form-control').removeClass('is-invalid');
+
+            // Validate name
+            if ($('#name').val().trim() === '') {
+                $('#name').addClass('is-invalid');
+                valid = false;
+            }
+
+            const phone = $('#phone').val();
+            if (!/^\d{10}$/.test(phone)) {
+                $('#phone').addClass('is-invalid');
+                valid = false;
+            }
+
+            
+            if ($('#address').val().trim() === '') {
+                $('#address').addClass('is-invalid');
+                valid = false;
+            }
+
+            if (valid) {
+                $('#orderModal').modal('hide');
+                $('#orderForm')[0].reset();
+                cart = [];
+                updateCart();
+                
+                
+                const toast = new bootstrap.Toast(document.getElementById('confirmationToast'));
+                toast.show();
+                
+                
+                bootstrap.Offcanvas.getInstance('#orderSidebar').hide();
+            }
+        });
+
+        loadMenu();
+    });
+    </script>
+</body>
+</html>
